@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { scan } from 'rxjs/operators'
 
-interface Command {
+export interface Command {
   id: number;
   type: 'success' | 'error' | 'clear';
   text?: string;
