@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { scan } from 'rxjs/operators'
 
 interface Command {
@@ -12,14 +12,12 @@ interface Command {
   providedIn: 'root'
 })
 export class NotificationsService {
-  messages: Subject<Command>;
+  messagesInput: Subject<Command>;
+  messagesOutput: Observable<Command[]>;
 
   constructor() {
-    this.messages = new Subject<Command>()
-  }
-
-  getMessages() {
-    return this.messages.pipe(
+    this.messagesInput = new Subject<Command>();
+    this.messagesOutput = this.messagesInput.pipe(
       scan((acc: Command[], value: Command) => {
         if (value.type === 'clear') {
           return acc.filter(message => message.id !== value.id);
@@ -31,7 +29,7 @@ export class NotificationsService {
   }
 
   addSuccess(message: string) {
-    this.messages?.next({
+    this.messagesInput?.next({
       id: this.randomId(),
       text: message,
       type: 'success'
@@ -39,7 +37,7 @@ export class NotificationsService {
   }
 
   addError(message: string) {
-    this.messages?.next({
+    this.messagesInput?.next({
       id: this.randomId(),
       text: message,
       type: 'error'
@@ -47,7 +45,7 @@ export class NotificationsService {
   }
 
   clearMessage(id: number) {
-    this.messages?.next({
+    this.messagesInput?.next({
       id,
       type: 'clear'
     })
